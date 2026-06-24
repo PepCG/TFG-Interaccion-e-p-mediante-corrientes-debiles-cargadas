@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import scienceplots
 plt.style.use(['science','grid','notebook'])
 
-# int EM
+# cargamos los datos
 angulos_lepton = np.load("angulos_lepton.npy")
 angulos_lepton_ma1270 = np.load("angulos_lepton_ma1270.npy")
 angulos_lepton_ma1350 = np.load("angulos_lepton_ma1350.npy")
