@@ -1,4 +1,4 @@
-# TFG: Interaccion e-p mediante corrientes debiles cargadas
+# TFG: Interacción e-p mediante corrientes débiles cargadas
 Se incluyen todos los códigos en Python asociados al TFG, a partir de los cuales es posible reproducir los resultados obtenidos. 
 
 ## Código principal
