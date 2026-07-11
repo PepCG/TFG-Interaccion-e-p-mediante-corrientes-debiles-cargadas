@@ -1,1 +1,2 @@
-
+Para obtener las Figuras 6.1 y 6.2, es necesario guardar los datos de varias procesos de dispersión débil electrón-protón variando el valor de la energía del haz inicial de electrones. Para ello, basta variar el valor asignado a línea 3 del archivo "Input.txt". Recuérdese que debe cambiar el valor de la primera línea entre 0 (EM) y 1 (débil) para elegir el tipo de interacción. Para obtener la Figura 6.3, debe utilizarse el archivo "cross_section_lepton.py", donde se calculan las secciones eficaces para la detección del electrón. Aplíquese el mismo proceso de guardado de datos que en el caso anterior.
+Posteriormente, cargar los datos en el archivo "comparacion_ma.py".
