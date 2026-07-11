@@ -1,1 +1,2 @@
-
+Para obtener las Figuras 6.9 y 6.10, es necesario guardar los datos de varias procesos de dispersión débil electrón-prtotón variando el valor de la masa axial utilizado en el proceso. Para ello, basta con editar el valor de MA en la línea 83, imponiendo los valores 1.03, 1.23 y 1.35. Para obtener la curva correspondiente a la parametrización z, guardar los datos del proceso tras modificar la última línea del archivo "Input.txt" (asígnese el valor 2). En este caso, todos los parámetros han sido ajustados previamente, al menos para adaptarse a un proceso cuyo haz inicial de electrones sea de 1000 MeV. 
+Posteriormente, cargar los datos en el archivo "comparacion_ma.py".
