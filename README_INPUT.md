@@ -11,3 +11,5 @@ Línea 3: determina la energía de la partícula disparada en MeV
 Línea 4: indica la helicidad entre 1 (antineutrino) y -1 (neutrino)
 
 Línea 5: elige la parametrización de los factores de forma entre 1 (Galster), 2 (Galster para Q^2<<), 3 (Kelly), 4 (Arrington-Sick), 5 (GK) y 6 (GKex)
+
+Línea 6: elige la parametrización del factor de forma axial entre 1 (dipolar) y 2 (expansión z)
