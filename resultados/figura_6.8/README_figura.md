@@ -1,1 +1,1 @@
-
+Para obtener la Figura 6.8, es necesario guardar los datos de un proceso de disersión electrón-protón mediante interacción debil. Luego, tras imponer que el valor del factor pseudoescalar sea nulo (esto se consigue fijando a 0 el valor de GP en la línea 214), volvemos a guardar los datos y los cargamos en el archivo "comparacion_gp.py", con los nombres indicados.
