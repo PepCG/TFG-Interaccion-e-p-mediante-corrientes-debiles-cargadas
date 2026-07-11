@@ -37,6 +37,21 @@ QWeak   = 0.07512
 gA      = 1.265
 fpi     = 93   
 
+#  Parámetros de la parametrización z-expansion
+zexp_tc = 9.0 * 0.134**2   
+zexp_t0 = -0.50            
+zexp_coeffs = np.array([
+    0.72115656, -1.70104640,  0.26324902,
+    1.53433681,  0.01061114, -1.49893610,
+    0.67062898
+])
+zexp_gA_beta = 1.2754
+zexp_a1a2_mean = np.array([-1.70104640, 0.26324902])
+zexp_a1a2_cov = np.array([
+    [ 0.00175929, -0.00294651],
+    [-0.00294651,  0.00807158]
+])
+
 # métrica
 gmunu = np.array([
     [ 1.0,  0.0,  0.0,  0.0],
@@ -49,12 +64,23 @@ gmunu = np.array([
 #  FORM FACTORS
 # ================================================================
 
-def formfactors(Qsq, param):
+def z_expansion_FA(QsqGeV, tc=zexp_tc, t0=zexp_t0, coeffs=zexp_coeffs):
+    sqrt_tcQ2 = np.sqrt(tc + QsqGeV)
+    sqrt_tct0 = np.sqrt(tc - t0)
+    z = (sqrt_tcQ2 - sqrt_tct0) / (sqrt_tcQ2 + sqrt_tct0)
+
+    FA = 0.0
+    for k, ak in enumerate(coeffs):
+        FA += ak * z**k
+    return FA
+
+
+def formfactors(Qsq, param, axial_param=1):
     QsqGeV = Qsq / 1e6
     xmu = 2 * MN
     tau = Qsq / (xmu * xmu)
 
-    MA = 1.03
+    MA = 1.23
     MA2 = MA * MA
     MV = 0.843
     MV2 = MV * MV
@@ -181,7 +207,10 @@ def formfactors(Qsq, param):
         F2p = 0.5*(F2S + F2V)
         F2n = 0.5*(F2S - F2V)
 
-        GA = -gA * DipA
+        if axial_param == 2:
+            GA = -z_expansion_FA(QsqGeV)
+        else:
+            GA = -gA * DipA
         GP = GA * 4 * MN / (Qsq + Mpi2)
 
         return F1p, F2p, F1n, F2n, GA, GP, 0.0, 0.0, 0.0
@@ -240,7 +269,10 @@ def formfactors(Qsq, param):
         F2p = 0.5*(F2S + F2V)
         F2n = 0.5*(F2S - F2V)
 
-        GA = -gA * DipA
+        if axial_param == 2:
+            GA = -z_expansion_FA(QsqGeV)
+        else:
+            GA = -gA * DipA
         GP = GA * 4 * MN / (Qsq + Mpi2)
 
         return F1p, F2p, F1n, F2n, GA, GP, 0.0, 0.0, 0.0
@@ -253,7 +285,10 @@ def formfactors(Qsq, param):
     F1n = (GEn + tau * GMn) / (1.0 + tau)
     F2n = (GMn - GEn) / (1.0 + tau)
 
-    GA = -gA * DipA
+    if axial_param == 2:
+        GA = -z_expansion_FA(QsqGeV)
+    else:
+        GA = -gA * DipA
     GP = GA * 4 * MN / (Qsq + Mpi2)
 
     return F1p, F2p, F1n, F2n, GA, GP, 0.0, 0.0, 0.0
@@ -301,14 +336,14 @@ def Lmunu(process, Helicity, Ki, Kf):
 #  TENSOR HADRÓNICO
 # ================================================================
 
-def Hmunu(process, nucleon, Pm, PN,param):
+def Hmunu(process, nucleon, Pm, PN, param, axial_param=1):
     Pm = np.asarray(Pm, dtype=float)
     PN = np.asarray(PN, dtype=float)
 
     Q = PN - Pm
     Qsq = - (Q[0]**2 - Q[1]**2 - Q[2]**2 - Q[3]**2)
 
-    F1p, F2p, F1n, F2n, GA, FP, F1s, F2s, GAs = formfactors(Qsq,param)
+    F1p, F2p, F1n, F2n, GA, FP, F1s, F2s, GAs = formfactors(Qsq, param, axial_param)
 
     H = np.zeros((4,4), dtype=complex)
 
@@ -445,6 +480,8 @@ def main():
         Ei       = float(f.readline())
         Helicity = int(f.readline())
         param = int(f.readline())
+        axial_param = int(f.readline())
+
 
     mf = electronmass
     if process == 1:
@@ -500,7 +537,7 @@ def main():
             continue
 
         Lmn = Lmunu(process, Helicity, Ki, Kf)
-        Hmn = Hmunu(process, nucleon, P, PN,param)
+        Hmn = Hmunu(process, nucleon, P, PN, param, axial_param)
 
         LmnHmn = np.sum(Lmn * Hmn)
 
@@ -517,7 +554,8 @@ def main():
         d2sig = Kpref * (pN/(2*Pi))**2 / abs(frec) * abs(LmnHmn)
         dsig = hbc**2 * d2sig
         
-        dsig_omega = dsig / np.abs(Q[0])
+        jac_e = Ef**2 / MN
+        dsig_omega = dsig / jac_e
 
         angles.append(thetaN_deg)
         dsig_vals.append(dsig)
@@ -538,11 +576,11 @@ def main():
     omega_arr = np.array(omega_vals)
     
     # guardamos variables para plotear aparte
-    #np.save("datos/comparacion_ff/angulos_neutron_ka.npy",angles_arr)
-    #np.save("datos/comparacion_ff/sigma_neutron_ka.npy",dsig_arr)
-    #np.save("datos/comparacion_ff/sigma_energia_proton_kelly.npy",dsig_arr)
+    #np.save("datos/comparacion_ma/angulos_nucleon_ma1230.npy",angles_arr)
+    #np.save("datos/comparacion_ma/sigma_nucleon_ma1230.npy",dsig_arr)
+    #np.save("datos/comparacion_detectado/sigma_energia_proton.npy",dsigma_omega_arr)
     #np.save("datos/asimetria_positron/omega_electron_103.npy",omega_arr)
-    #np.save("datos/comparacion_ff/omega_neutron_ka.npy",Q2_arr) 
+    #np.save("datos/comparacion_ma/q2_nucleon_ma1230.npy",Q2_arr) 
     #np.save("datos/asimetria_positron/sigma.npy",dsig_arr) 
     
     # ================================================================
